@@ -8,7 +8,18 @@ from django.template import loader
 # Create your views here.
 
 def login(request):
-    return render(request, 'login.html', {})
+    if request.method == "POST":
+        identifiant = request.POST['identifiant']
+        password = request.POST['password']
+        user = authenticate(request, identifiant=identifiant, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('login')
+        else:
+            messages.success(request, ("Erreur de matricule ou de mot de passe, veuillez ressayer"))
+            return redirect('login')
+    else:
+        return render(request, 'login.html', {})
 
 
 # def logout_user(request):
