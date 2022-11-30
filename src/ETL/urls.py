@@ -21,6 +21,8 @@ from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 from ETL.views import index
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,3 +30,7 @@ urlpatterns = [
     path('ETL/', include('identification.urls')),
     path('ETL/upload/',views.uploadCsv, name='upload'),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

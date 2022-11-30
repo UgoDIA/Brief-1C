@@ -3,5 +3,22 @@
 {% load static %}
 
 {% block content %}
-<p> TEST </p>
+
+    <div class="container">
+      <h2> Import de quizz </h2>
+      <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="upCSV" class="btn btn-primary btn-block btn-outlined">Sélectionner le(s) fichier(s) CSV</label>
+    <input type="file" id='upCSV' name="document" multiple style="display: none">
+    <button type ="submit" id='btUp' class="btn btn-success btn-block btn-outlined"> Uploader le(s) fichier(s) CSV </button>
+      </form>
+     <div>
+      {% if noms %}
+      <p><h4> fichier(s) uploadé(s) : </h4></p>
+      {% for n in noms%}
+      <p> {{n}} </p>
+      {%endfor%}
+      {% endif %}
+     </div>
+    </div>
 {% endblock %}

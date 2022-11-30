@@ -5,8 +5,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.template import loader
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+
 
 def loginq(request):
     if request.method == "POST":
@@ -17,7 +19,7 @@ def loginq(request):
             login(request, user)
             return redirect('upload')
         else:
-            messages.success(request, ("Erreur d'identifiant ou de mot de passe, veuillez ressayer"))
+            messages.success(request, ("Mauvais identifiant ou mot de passe, veuillez ressayer."))
             return redirect('login')
     else:
         return render(request, 'login.html')

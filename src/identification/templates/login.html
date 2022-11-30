@@ -6,11 +6,16 @@
     {% endblock %}
 
 {% block content %}
+
 <div class="container">
+    {% if messages %}
+    {% for message in messages %}
 <div class="alert alert-danger alert-dismissible fade show">
-    <strong>Erreur!</strong> Mauvais identifiant ou de mot de passe, veuillez ressayer.
+    <strong> {{ message }}</strong>
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
+{% endfor %}
+{% endif %}
 <h1>Connexion</h1>
 
 
