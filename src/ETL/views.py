@@ -53,6 +53,9 @@ def uploadCsv(request):
         listePays=df.drop_duplicates('Country')
         P=listePays['Country'].to_list()
         print('total pays : '+str(len(P)))
+        listeFacture=df.drop_duplicates(subset=['InvoiceNo','InvoiceDate'])
+        listeFacture.to_sql('ventes', if_exists='replace')
+        
         for i in range(len(P)):
             newPays=Pays(pays=P[i])
             newPays.save()
