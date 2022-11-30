@@ -26,4 +26,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',index, name="index"),
     path('ETL/', include('identification.urls')),
+    path('ETL/upload/',views.uploadCsv, name='upload'),
 ]

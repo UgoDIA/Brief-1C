@@ -5,3 +5,6 @@ from django.http import HttpResponseRedirect
 
 def index(request):
     return redirect('login')
+
+def uploadCsv(request):
+    return render(request,'uploadCsv.html')
