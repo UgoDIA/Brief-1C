@@ -30,7 +30,7 @@ def uploadCsv(request):
         urlFichiers=[monRepertoire + f for f in listeFichiers]
         context['noms']=listeFichiers
         # delete(monRepertoire)
-        df = pd.read_csv(urlFichiers[0],encoding = "ISO-8859-1")                              #(245903, 8)
+        df = pd.read_csv(urlFichiers[0],encoding = "ISO-8859-1")                             
         print('original : '+str(df.shape))
         df.drop(['CustomerID','UnitPrice'], inplace=True, axis=1)
         print('suppr colonne : '+str(df.shape))                        
@@ -44,21 +44,28 @@ def uploadCsv(request):
         print('suppr fdate :'+str(df.shape))
         df.loc[(df['StockCode'].str.len()<=4 )&( df['StockCode'].str.len()>2) ]=np.nan
         df.loc[df['StockCode'].str.len()>8 ]=np.nan
-        df.dropna(subset=['StockCode'], inplace = True)
+        df.dropna(inplace = True)
         print('suppr codes : '+str(df.shape))
         df=df[(df['Quantity']>0 |(df['Quantity'].isnull()))]
+        df.drop(['Quantity'], inplace=True, axis=1)
         print('suppr qté n :'+str(df.shape))
         df.drop(df[df['Country']== 'Unspecified'].index,inplace=True)
         print('suppr unsp :'+str(df.shape))
         listePays=df.drop_duplicates('Country')
         P=listePays['Country'].to_list()
-        print('total pays : '+str(len(P)))
-        listeFacture=df.drop_duplicates(subset=['InvoiceNo','InvoiceDate'])
-        listeFacture.to_sql('ventes', if_exists='replace')
-        
+        print('total pays : '+str(len(P)))     
         for i in range(len(P)):
             newPays=Pays(pays=P[i])
             newPays.save()
+        listeFacture=df.drop_duplicates(subset=['InvoiceNo','InvoiceDate'])     
+        for index, row in listeFacture.iterrows():
+            newFacture=Ventes(nofacture=row['InvoiceNo'],datefacture=row['InvoiceDate'],pays=Pays.objects.get(pays=row['Country']))
+            newFacture.save()
+        listeProduits=df.drop_duplicates(subset=['StockCode'])
+        for index, row in listeProduits.iterrows():
+            newProduits=Produits(codeproduit=row['StockCode'],nomproduit=row['Description'])
+            newProduits.save()
+        # for index, row in listeProduits
     return render(request,'uploadCsv.html', context)
 
 def delete(dossier):

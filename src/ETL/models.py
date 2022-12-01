@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Pays(models.Model):
-    pays = models.CharField(primary_key=True, max_length=20)
+    pays = models.CharField(primary_key=True, max_length=30)
 
     class Meta:
         db_table = 'pays'
@@ -10,16 +10,16 @@ class Pays(models.Model):
 
 class Produits(models.Model):
     codeproduit = models.CharField(db_column='codeProduit', primary_key=True, max_length=20)  # Field name made lowercase.
-    nomproduit = models.CharField(db_column='nomProduit', max_length=20)  # Field name made lowercase.
+    nomproduit = models.CharField(db_column='nomProduit', max_length=50)  # Field name made lowercase.
 
     class Meta:
         db_table = 'produits'
 
 
 class Ventes(models.Model):
-    nofacture = models.CharField(db_column='noFacture', primary_key=True, max_length=20)  # Field name made lowercase.
+    nofacture = models.IntegerField(db_column='noFacture', primary_key=True)  # Field name made lowercase.
     datefacture = models.DateField(db_column='dateFacture')  # Field name made lowercase.
-    pays = models.ForeignKey(Pays, models.DO_NOTHING, db_column='pays')
+    pays = models.ForeignKey(Pays, models.CASCADE, db_column='pays')
 
     class Meta:
         db_table = 'ventes'
