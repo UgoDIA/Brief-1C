@@ -61,11 +61,15 @@ def uploadCsv(request):
         for index, row in listeFacture.iterrows():
             newFacture=Ventes(nofacture=row['InvoiceNo'],datefacture=row['InvoiceDate'],pays=Pays.objects.get(pays=row['Country']))
             newFacture.save()
+        df.drop(['InvoiceDate','Country'], inplace=True, axis=1)   
         listeProduits=df.drop_duplicates(subset=['StockCode'])
         for index, row in listeProduits.iterrows():
             newProduits=Produits(codeproduit=row['StockCode'],nomproduit=row['Description'])
             newProduits.save()
-        # for index, row in listeProduits
+        df.drop(['Description'], inplace=True, axis=1) 
+        # for index, row in df.iterrows():
+        #     newDetails=Detailsventes(nofacture=Ventes.objects.get(nofacture=row['InvoiceNo']),codeproduit=Produits.objects.get(codeproduit=row['StockCode']))
+        #     newDetails.save()
     return render(request,'uploadCsv.html', context)
 
 def delete(dossier):
