@@ -67,9 +67,9 @@ def uploadCsv(request):
             newProduits=Produits(codeproduit=row['StockCode'],nomproduit=row['Description'])
             newProduits.save()
         df.drop(['Description'], inplace=True, axis=1) 
-        # for index, row in df.iterrows():
-        #     newDetails=Detailsventes(nofacture=Ventes.objects.get(nofacture=row['InvoiceNo']),codeproduit=Produits.objects.get(codeproduit=row['StockCode']))
-        #     newDetails.save()
+        for index, row in df.iterrows():
+            newDetails=Detailsventes(nofacture=Ventes.objects.get(nofacture=row['InvoiceNo']),codeproduit=Produits.objects.get(codeproduit=row['StockCode']))
+            newDetails.save()
     return render(request,'uploadCsv.html', context)
 
 def delete(dossier):
