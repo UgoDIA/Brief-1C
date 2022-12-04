@@ -14,9 +14,10 @@
       </form>
      <div>
       {% if noms %}
-      <p><h4> fichier(s) uploadé(s) : </h4></p>
       {% for n in noms%}
-      <p> {{n}} </p>
+      <p><h4> fichier(s) uploadé(s) :  {{n}}  </h4></p>
+    
+      
       {%endfor%}
       
       {% endif %}
