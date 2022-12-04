@@ -22,4 +22,40 @@
       {% endif %}
      </div>
     </div>
+
+<div id="bg-spinner"> 
+  <h3>Traitement du csv en cours, veuillez patienter...</h3>
+  <div id="position-spinner"> 
+    <span id="spinner">
+
+    </span>
+    
+  </div>
+ 
+</div>
+
+
+   <script>
+    jQuery(function($){
+      $(document).ajaxSend(function(){
+        $("#bg-spinner").fadeIn(500);
+      });
+
+      $("#btUp").click(function(){
+        $.ajax({
+          type:'GET',
+          success:function(data){
+            var d = $.parseJSON(data);
+            alert(d.Test);
+          }
+        }).done(function(){
+          setTimeout(function(){
+            $("#bg-spinner").fadeOut(500);
+          },700);
+        });
+      });
+    });
+   </script>
+
+
 {% endblock %}

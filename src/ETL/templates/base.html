@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% static "css/style.css"  %}" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     {% block header %}
     {% endblock %}
 </head>
@@ -17,7 +17,7 @@
     
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
         <div class="container">
-          <a class="navbar-brand" href="#">
+          <a class="navbar-brand" href="{% url 'login' %}">
             <img src="{% static 'logoafpar.png' %}" alt="..." width="100" height="100">
           </a>
           <span class='titre'>Analysis Features Preprocessing And Research </span>
