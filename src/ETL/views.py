@@ -94,4 +94,9 @@ def delete(dossier):
         for f in files:
             os.unlink(os.path.join(root, f))
         for d in dirs:
+
             shutil.rmtree(os.path.join(root, d))
+            
+# SELECT setval('public."detailsVentes_idDetails_seq"', 0, true);
+# Truncate table pays CASCADE;
+# Truncate table produits CASCADE;
