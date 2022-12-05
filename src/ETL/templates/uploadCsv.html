@@ -12,16 +12,116 @@
     <input type="file" id='upCSV' name="document" multiple style="display: none">
     <button type ="submit" id='btUp' class="btn btn-success btn-block btn-outlined"> Uploader le(s) fichier(s) CSV </button>
       </form>
-     <div>
+      {% comment %} <div>
       {% if noms %}
-      {% for n in noms%}
-      <p><h4> fichier(s) uploadé(s) :  {{n}}  </h4></p>
-    
       
-      {%endfor%}
-      
+      <p><h4> fichier(s) uploadé(s) :   </h4></p>
+      <h4> {% for n in noms%} 
+     {{n}}  
+      {%endfor%}</h4>
       {% endif %}
-     </div>
+      
+    
+   
+     </div> {% endcomment %}
+
+     {% if noms %}
+     <p><h4> Feedback :   </h4></p>
+     <table class="table table-dark table-hover w-auto " style= " font-size: 20px;">
+      
+      <thead class="thead-light">
+      <tr>
+        <th>Nom du fichier</th>
+        {% for n in noms%}
+        <th>{{n}} </th>
+        {%endfor%}
+      
+     
+      </tr>
+   
+    </thead>
+    
+<tbody>
+  <tr>
+  
+ 
+  
+  </tr>
+  <tr>
+    <td>Lignes par défaut</td>
+     {% for o in original%}
+    <td class="text-center">{{o}}</td>
+    {%endfor%}</tr>
+
+    <tr>
+      <td>Lignes après vérification des lignes duppliqués</td>
+      {% for d in duppli%}
+      <td class="text-center" >{{d}}</td>
+    {%endfor%}
+    </tr>
+
+    <tr>
+      <td>Lignes après vérification des avoirs</td>
+      {% for a in avoirs%}
+      <td class="text-center" >{{a}}</td>
+    {%endfor%}
+    </tr>
+
+    <tr>
+      <td>Lignes après vérification des dates </td>
+      {% for d in dates%}
+      <td class="text-center" >{{d}}</td>
+    {%endfor%}
+    </tr>
+
+    <tr>
+      <td>Lignes après vérification des produits </td>
+      {% for p in produits%}
+      <td class="text-center" >{{p}}</td>
+    {%endfor%}
+    </tr>
+
+    <tr>
+      <td>Lignes après vérification des quantités </td>
+      {% for q in quant%}
+      <td class="text-center" >{{q}}</td>
+    {%endfor%}
+    </tr>
+
+    <tr>
+      <td>Lignes après vérification des pays </td>
+      {% for p in pays%}
+      <td class="text-center" >{{p}}</td>
+    {%endfor%}
+    </tr>
+
+    <tr>
+      <td>Lignes totales </td>
+      {% for t in total%}
+      <td class="text-center" >{{t}}</td>
+    {%endfor%}
+    </tr>
+
+    <tr>
+      <td>Lignes supprimées </td>
+      {% for s in sub%}
+      <td class="text-center" >{{s}}</td>
+    {%endfor%}
+    </tr>
+
+    <tr>
+      <td>% </td>
+      {% for p in pourcent%}
+      <td class="text-center" >{{p}}%</td>
+    {%endfor%}
+    </tr>
+  </tbody>
+  
+  
+  </table>
+    
+    {% endif %}
+
     </div>
 
 <div id="bg-spinner"> 
