@@ -29,6 +29,8 @@ urlpatterns = [
     path('',index, name="index"),
     path('ETL/', include('identification.urls')),
     path('ETL/upload/',views.uploadCsv, name='upload'),
+    path('ETL/save/',views.save, name='save'),
+    path('ETL/visualisation/',views.menuVisu, name='visualisation')
 ]
 
 

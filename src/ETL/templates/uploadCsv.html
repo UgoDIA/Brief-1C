@@ -119,8 +119,12 @@
   
   
   </table>
-    
+  <form method="POST">
+    {% csrf_token %}
+  <a class="btn btn-warning" href="{% url 'save' %}" role="button">Enregistrer</a>
     {% endif %}
+  </form>
+    
 
     </div>
 
