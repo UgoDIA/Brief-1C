@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
+from django.db import connection
 from os.path import isfile, join
 from django.urls import reverse
 import os, shutil, psycopg2
@@ -49,6 +50,7 @@ def uploadCsv(request):
             context['original']=original
             df.rename(columns={'InvoiceNo':'noFacture','StockCode':'codeProduit','Description':'nomProduit','InvoiceDate':'dateFacture','Country':'pays'},inplace=True)
             df.drop(['CustomerID','UnitPrice'], inplace=True, axis=1)
+            df['codeProduit']=df['codeProduit'].str.upper()
             # print('suppr colonne : '+str(df.shape))                        
             df=df.drop_duplicates(['noFacture','codeProduit']) 
             # print('suppr dupli : '+str(df.shape))
@@ -135,6 +137,7 @@ def save(request):
                 df = pd.read_csv(urlFichiers[i],encoding = "ISO-8859-1")                            
                 df.rename(columns={'InvoiceNo':'noFacture','StockCode':'codeProduit','Description':'nomProduit','InvoiceDate':'dateFacture','Country':'pays'},inplace=True)
                 df.drop(['CustomerID','UnitPrice'], inplace=True, axis=1)
+                df['codeProduit']=df['codeProduit'].str.upper()
                 # print('suppr colonne : '+str(df.shape))                        
                 df=df.drop_duplicates(['noFacture','codeProduit']) 
                 # print('suppr dupli : '+str(df.shape))
@@ -196,6 +199,15 @@ def accueil(request):
 
 @login_required(login_url='/ETL/login')
 def graphPays(request):
+    cursor=connection.cursor()
+    cursor.execute('SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 DESC')
+    q=cursor.fetchall()
+    df=pd.DataFrame(q)
+    pays=df[0].to_list()
+    ventes=df[1].to_list()
+    
+    
+    # print(q[2])
     return render(request,'graphPays.html')
     
 def delete(dossier):
