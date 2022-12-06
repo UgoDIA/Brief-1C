@@ -30,7 +30,9 @@ urlpatterns = [
     path('ETL/', include('identification.urls')),
     path('ETL/upload/',views.uploadCsv, name='upload'),
     path('ETL/save/',views.save, name='save'),
-    path('ETL/visualisation/',views.menuVisu, name='visualisation')
+    path('ETL/visualisation/',views.menuVisu, name='visualisation'),
+    path('ETL/accueil/',views.accueil, name='accueil'),
+    path('ETL/visualisation/pays',views.graphPays, name='graphPays'),
 ]
 
 

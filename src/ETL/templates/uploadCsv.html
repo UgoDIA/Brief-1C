@@ -8,9 +8,9 @@
       <h2> Import de CSV </h2>
       <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <label for="upCSV" class="btn btn-primary btn-block btn-outlined">Sélectionner le(s) fichier(s) CSV</label>
-    <input type="file" id='upCSV' name="document" multiple style="display: none">
-    <button type ="submit" id='btUp' class="btn btn-success btn-block btn-outlined"> Uploader le(s) fichier(s) CSV </button>
+    <label for="upCSV" style= " font-size: 20px" class="btn btn-primary btn-block btn-outlined">Sélectionner le(s) fichier(s) CSV</label>
+    <input type="file"  id='upCSV' name="document" multiple style="display: none">
+    <button type ="submit" id='btUp' style= " font-size: 20px" class="btn btn-success btn-block btn-outlined"> Uploader le(s) fichier(s) CSV </button>
       </form>
       {% comment %} <div>
       {% if noms %}
@@ -119,24 +119,23 @@
   
   
   </table>
-  <form method="POST">
+ 
+  <form action="{% url 'save' %}" method="POST"  enctype="multipart/form-data">
     {% csrf_token %}
-  <a class="btn btn-warning" href="{% url 'save' %}" role="button">Enregistrer</a>
-    {% endif %}
+    <button type ="submit" id='btUp2' style= " font-size: 20px" class="btn btn-warning btn-block btn-outlined"> Enregistrer dans la base de données</button>
+    <a href="{% url 'upload' %}" class=" btn btn-danger " style="font-size:20px; margin-left:20px"" role="button" >Annuler</a>
   </form>
-    
+  {% endif %} 
+  <a href="{% url 'accueil' %}" class=" btn btn-secondary " style="font-size:20px; margin-top:20px"" role="button" >Retour à l'accueil</a>
 
     </div>
 
-<div id="bg-spinner"> 
+<div id="bg-spinner">  
   <h3>Traitement du csv en cours, veuillez patienter...</h3>
   <div id="position-spinner"> 
     <span id="spinner">
-
     </span>
-    
   </div>
- 
 </div>
 
 
@@ -160,7 +159,26 @@
         });
       });
     });
+    jQuery(function($){
+      $(document).ajaxSend(function(){
+        $("#bg-spinner").fadeIn(500);
+      });
+
+      $("#btUp2").click(function(){
+        $.ajax({
+          type:'GET',
+          success:function(data){
+            var d = $.parseJSON(data);
+            alert(d.Test);
+          }
+        }).done(function(){
+          setTimeout(function(){
+            $("#bg-spinner").fadeOut(500);
+          },700);
+        });
+      });
+    });
    </script>
 
-
+   
 {% endblock %}

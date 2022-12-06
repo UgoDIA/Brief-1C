@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container col-1 w-50 mx-auto" style="padding:50px" >
+    
+    <a class="row-lg w-100 py-3 my-3 btn btn-secondary" style= " font-size: 20px" href="{% url 'upload' %}" role="button"> Importer des données</a>
+    <a class="row-lg w-100 py-3 my-3 btn btn-secondary" style= " font-size: 20px" href="{% url 'visualisation' %}" role="button">Visualiser les données</a>
+    
+</div>
+
+{% endblock %}

@@ -20,8 +20,8 @@ def index(request):
 @login_required(login_url='/ETL/login')
 def uploadCsv(request):
     monRepertoire='CSV/'
-    conn= 'postgresql://postgres:0000@localhost:5432/ETLDB'
-    engine=create_engine(conn)
+    # conn= 'postgresql://postgres:0000@localhost:5432/ETLDB'
+    # engine=create_engine(conn)
     context ={}
     # pd.set_option('display.max_rows', None)
     delete(monRepertoire)
@@ -184,12 +184,20 @@ def save(request):
                 except:
                     pass
             # print(context) 
-    return HttpResponseRedirect(reverse('visualisation'))
+    return redirect('visualisation')
     
+@login_required(login_url='/ETL/login')    
 def menuVisu(request):
     return render(request,'visualisation.html')
-    
 
+@login_required(login_url='/ETL/login')
+def accueil(request):
+    return render(request,'accueil.html')
+
+@login_required(login_url='/ETL/login')
+def graphPays(request):
+    return render(request,'graphPays.html')
+    
 def delete(dossier):
     for root, dirs, files in os.walk(dossier):
         for f in files:
