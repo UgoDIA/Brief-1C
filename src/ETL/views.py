@@ -199,16 +199,60 @@ def accueil(request):
 
 @login_required(login_url='/ETL/login')
 def graphPays(request):
+    context={}
     cursor=connection.cursor()
-    cursor.execute('SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 DESC')
-    q=cursor.fetchall()
-    df=pd.DataFrame(q)
-    pays=df[0].to_list()
-    ventes=df[1].to_list()
     
+    if request.method =='POST':
+        if request.POST.get("nomPays"):
+            nomPays=request.POST['nomPays']
+            print(nomPays)
+            cursor.execute('''SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 DESC OFFSET 0 ROWS LIMIT 10''')       
+            q=cursor.fetchall()
+            df=pd.DataFrame(q)
+            pays=df[0].to_list()
+            ventes=df[1].to_list()
+            context['pays']=pays
+            context['ventes']=ventes
+           
+        if request.POST.get("ukCheck"):
+            ukCheck=request.POST['ukCheck']
+            uk=ukCheck
+            cursor.execute(f'''SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 DESC OFFSET %(uk)s ROWS LIMIT 10''',{"uk":uk,})
+            q=cursor.fetchall()
+            df=pd.DataFrame(q)
+            pays=df[0].to_list()
+            ventes=df[1].to_list()
+            context['pays']=pays
+            context['ventes']=ventes
+            context['check']=uk
+            print(uk)
+        if request.POST.get("ukCheckq"):
+            ukCheck=request.POST['ukCheckq'] 
+            uk=ukCheck
+            cursor.execute(f'''SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 DESC OFFSET %(uk)s ROWS LIMIT 10''',{"uk":uk,})
+            q=cursor.fetchall()
+            df=pd.DataFrame(q)
+            pays=df[0].to_list()
+            ventes=df[1].to_list()
+            context['pays']=pays
+            context['ventes']=ventes
+            context['check']=uk
+            print(uk)
+            
+    else:
+        uk=0       
+        cursor.execute('''SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 DESC OFFSET %(uk)s ROWS LIMIT 10''',{"uk":uk,})       
+        q=cursor.fetchall()
+        df=pd.DataFrame(q)
+        pays=df[0].to_list()
+        ventes=df[1].to_list()
+        context['pays']=pays
+        context['ventes']=ventes
+        context['check']=uk
+        print(uk)
     
     # print(q[2])
-    return render(request,'graphPays.html')
+    return render(request,'graphPays.html',context)
     
 def delete(dossier):
     for root, dirs, files in os.walk(dossier):

@@ -3,11 +3,150 @@
 {% load static %}
 
 {% block header %}
+    <link rel="stylesheet" href="{% static "CSS/graph.css"  %}" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-autocolors"></script>
 
 {% endblock %}
-
 {% block content %}
 
+
+
+
+<div class="chart-container">
+    <form method="post"> {% csrf_token %}
+        
+    <h2> Répartition des ventes par pays</h2>
+       <div>
+      <button class="btn btn-outline-dark" type='submit' name="ukCheck" value='1' style="margin-top:20px">cacher</button>
+       <button class="btn btn-outline-dark" type='submit'  name="ukCheckq" value='0' style="margin-top:20px">afficher</button> </div> 
+    {% for p in pays%} <button class="btn btn-outline-dark" type='submit' name="nomPays" value={{p}} style="margin-top:20px">{{p}}</button>{%endfor%}
+    </form>
+    <canvas id="myChart"  ></canvas>
+  </div>
+
+  
+
+{% comment %} <script>
+
+    const autocolors = window['chartjs-plugin-autocolors'];
+    Chart.register(autocolors);
+    const ctx = document.getElementById('myChart');
+  
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels:[{% for p in pays%} '{{p}}',{%endfor%}],
+        datasets: [{
+          label:'Ventes',
+          data: {{ventes}},
+          borderWidth: 1
+        }]
+      },
+      options: {
+         scales: {
+          y: {
+            beginAtZero: true
+          }
+        } 
+      }
+    });
+  </script> {% endcomment %}
+
+
+ <script>
+    // setup 
+
+    const autocolors = window['chartjs-plugin-autocolors'];
+    Chart.register(autocolors);
+
+    const data = {
+      labels: [{% for p in pays%} '{{p}}',{%endfor%}],
+      datasets: [{
+        label: 'Weekly Sales',
+        data: {{ventes}},
+        backgroundColor: [
+          'rgba(255, 26, 104, 0.5)',
+          'rgba(54, 162, 235, 0.5)',
+          'rgba(255, 206, 86, 0.5)',
+          'rgba(75, 192, 192, 0.5)',
+          'rgba(153, 102, 255, 0.5)',
+          'rgba(255, 159, 64, 0.5)',
+          'rgba(255, 26, 104, 0.5)',
+          'rgba(54, 162, 235, 0.5)',
+          'rgba(255, 206, 86, 0.5)',
+          'rgba(75, 192, 192, 0.5)',
+          
+        ],
+        borderColor: [
+          'rgba(255, 26, 104, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+          'rgba(255, 26, 104, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          
+        ],
+        borderWidth: 1
+      }]
+    };
+
+    // config 
+    const config = {
+      type: 'bar',
+      data,
+      options: {
+        plugins:{
+            legend:{
+                display:false,
+                onClick:(evt,legendItem,legend)=>{
+                    console.log(legendItem.text)
+                    const index= legend.chart.data.labels.indexOf(legendItem.text);
+                    legend.chart.toggleDataVisibility(index);
+                    legend.chart.update();
+                },
+                labels:{
+                    boxWidth: 0,
+                    generateLabels:(chart)=>{
+                        let visibility =[];
+                        for(let i=0; i< chart.data.labels.length;i++){
+                            if(chart.getDataVisibility(i)===true){
+                                visibility.push(false)
+                            }else{
+                                visibility.push(true)
+                            }
+                        };
+                        //console.log(chart) 
+                        return chart.data.labels.map(
+                            (label, index)=>({
+                                text:label,
+                                strokeStyle:chart.data.datasets[0].borderColor[index],
+                                fillStyle:chart.data.datasets[0].backgroundColor[index],
+                                hidden:visibility[index]
+                            })
+                        )
+                    }
+                }
+            }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    };
+
+    // render init block
+    const myChart = new Chart(
+      document.getElementById('myChart'),
+      config
+    );
+    </script> 
 
 
 {% endblock %}
