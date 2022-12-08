@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{% static "CSS/graph.css"  %}" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-autocolors"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2 "></script>
 
 {% endblock %}
 {% block content %}
@@ -13,86 +14,67 @@
 
 
 
-<div class="chart-container">
-    <form method="post"> {% csrf_token %}
-        
+<div class="chart-container" style="width : 1100px">
+      
     <h2> Répartition des ventes par pays</h2>
-       <div>
-      <button class="btn btn-outline-dark" type='submit' name="ukCheck" value='1' style="margin-top:20px">cacher</button>
-       <button class="btn btn-outline-dark" type='submit'  name="ukCheckq" value='0' style="margin-top:20px">afficher</button> </div> 
-    {% for p in pays%} <button class="btn btn-outline-dark" type='submit' name="nomPays" value={{p}} style="margin-top:20px">{{p}}</button>{%endfor%}
+    <form method="post"> {% csrf_token %}
+      {% comment %} <button class="btn btn-outline-dark" type='submit' name="ukCheck" value='1' style="margin-top:20px">cacher</button>
+       <button class="btn btn-outline-dark" type='submit'  name="ukCheckq" value='0' style="margin-top:20px">afficher</button> </div>  
+    {% for p in pays%} <button class="btn btn-outline-dark" type='submit' name="nomPays" value={{p}} style="margin-top:20px">{{p}}</button>{%endfor%} {% endcomment %}
     </form>
     <canvas id="myChart"  ></canvas>
   </div>
 
-  
 
-{% comment %} <script>
 
-    const autocolors = window['chartjs-plugin-autocolors'];
-    Chart.register(autocolors);
+ {% comment %} <script>
+
+   {% comment %} const autocolors = window['chartjs-plugin-autocolors'];
+    Chart.register(autocolors); 
+    
+
     const ctx = document.getElementById('myChart');
-  
     new Chart(ctx, {
       type: 'bar',
-      data: {
-        labels:[{% for p in pays%} '{{p}}',{%endfor%}],
-        datasets: [{
-          label:'Ventes',
-          data: {{ventes}},
-          borderWidth: 1
-        }]
+      data: { 
+        labels: [''],
+        datasets: [ {% for cc, vv in zipp %}  {  
+          label:['{{cc}}'],
+          data: [{{vv}}],
+          borderWidth: 1 ,
+        }, {%endfor%} ]
       },
       options: {
          scales: {
           y: {
             beginAtZero: true
           }
+        },
+        legend:{
+          position:'left',
+          align:'end'
         } 
       }
     });
-  </script> {% endcomment %}
+  </script>      {% endcomment %}
 
+  <script>
+   
 
- <script>
-    // setup 
+    {% comment %} const autocolors = window['chartjs-plugin-autocolors'];
+    Chart.register(autocolors);  {% endcomment %}
 
-    const autocolors = window['chartjs-plugin-autocolors'];
-    Chart.register(autocolors);
+    Chart.register(ChartDataLabels);
 
     const data = {
-      labels: [{% for p in pays%} '{{p}}',{%endfor%}],
-      datasets: [{
-        label: 'Weekly Sales',
-        data: {{ventes}},
-        backgroundColor: [
-          'rgba(255, 26, 104, 0.5)',
-          'rgba(54, 162, 235, 0.5)',
-          'rgba(255, 206, 86, 0.5)',
-          'rgba(75, 192, 192, 0.5)',
-          'rgba(153, 102, 255, 0.5)',
-          'rgba(255, 159, 64, 0.5)',
-          'rgba(255, 26, 104, 0.5)',
-          'rgba(54, 162, 235, 0.5)',
-          'rgba(255, 206, 86, 0.5)',
-          'rgba(75, 192, 192, 0.5)',
-          
-        ],
-        borderColor: [
-          'rgba(255, 26, 104, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-          'rgba(255, 26, 104, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          
-        ],
-        borderWidth: 1
-      }]
+      labels: [''],
+      datasets: [ {% for cc, vv in zipp %} {
+        label: ['{{cc}}'],
+        data: [{{vv}}],
+        borderWidth: 1,
+        barPercentage:0.90,
+        categoryPercentage:0.95,
+      }, {%endfor%} ]
     };
 
     // config 
@@ -101,45 +83,80 @@
       data,
       options: {
         plugins:{
-            legend:{
-                display:false,
-                onClick:(evt,legendItem,legend)=>{
-                    console.log(legendItem.text)
-                    const index= legend.chart.data.labels.indexOf(legendItem.text);
-                    legend.chart.toggleDataVisibility(index);
-                    legend.chart.update();
-                },
-                labels:{
-                    boxWidth: 0,
-                    generateLabels:(chart)=>{
-                        let visibility =[];
-                        for(let i=0; i< chart.data.labels.length;i++){
-                            if(chart.getDataVisibility(i)===true){
-                                visibility.push(false)
-                            }else{
-                                visibility.push(true)
-                            }
-                        };
-                        //console.log(chart) 
-                        return chart.data.labels.map(
-                            (label, index)=>({
-                                text:label,
-                                strokeStyle:chart.data.datasets[0].borderColor[index],
-                                fillStyle:chart.data.datasets[0].backgroundColor[index],
-                                hidden:visibility[index]
-                            })
-                        )
-                    }
+          datalabels: {
+            labels: {
+              name: {
+                clamp:true,
+                display:'true',
+                anchor:'end',
+                color:'black',
+                align: 'bottom',
+                font: {size: 16, weight:'bold'},
+                formatter: function(value, ctx) {
+                  return ctx.active
+                    ? ctx.dataset.label
+                    : ctx.dataset.label;
                 }
+              },
+              value: {
+                clamp:true,
+                display:'auto',
+                anchor:'end',
+                color:'black',
+                align: 'top',
+                font: {size: 16, weight:'bold'},
+                borderWidth: 2,
+                borderRadius: 4,
+                formatter: function(value, ctx) {
+                  return ctx.active
+                    ? value
+                    : Math.round(value * 1000) / 1000;
+                },
+                padding: 0
+              }
             }
-        },
-        scales: {
-          y: {
-            beginAtZero: true
-          }
+          },
+          legend:{
+            display:true,
+            
+            position:'top',
+            labels:{
+              padding:20,
+              font: {
+                size: 16 },
+                boxWidth: 15,
+                color:'black',
+                weight:'bold',  
+              }
+            }
+          },
+          scales: {
+            x:{
+              ticks:{
+                display:true,
+              }
+            },
+            y: {
+              ticks: {
+                color:'black',
+                font: {
+                  size:15,
+                  weight:'bold',
+                },
+              },
+              beginAtZero: true,
+              title:{
+                display:true,
+                text:'Nombre de ventes',
+                font: {
+                  size: 20,
+                  weight: 'bold',
+                },
+              },
+            }
+          },
         }
-      }
-    };
+      };
 
     // render init block
     const myChart = new Chart(
@@ -147,6 +164,7 @@
       config
     );
     </script> 
+  
 
 
 {% endblock %}

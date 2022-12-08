@@ -17,7 +17,7 @@ def loginq(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('upload')
+            return redirect('accueil')
         else:
             messages.success(request, ("Mauvais identifiant ou mot de passe, veuillez ressayer."))
             return redirect('login')
