@@ -203,10 +203,8 @@ def graphPays(request):
     cursor=connection.cursor()
     
     if request.method =='POST':
-        if request.POST.get("nomPays"):
-            nomPays=request.POST['nomPays']
-            print(nomPays)
-            cursor.execute('''SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 DESC OFFSET 0 ROWS LIMIT 10''')       
+        if request.POST.get("limitAll"):
+            cursor.execute('''SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 DESC LIMIT 38'''),
             q=cursor.fetchall()
             df=pd.DataFrame(q)
             pays=df[0].to_list()
@@ -215,23 +213,18 @@ def graphPays(request):
             context['ventes']=ventes
             zipp=zip(pays,ventes)
             context['zipp']=zipp
-          
-           
-        if request.POST.get("ukCheck"):
-            ukCheck=request.POST['ukCheck']
-            uk=ukCheck
-            cursor.execute(f'''SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 DESC OFFSET %(uk)s ROWS LIMIT 10''')
+            
+        if request.POST.get("flop"):  
+            cursor.execute('''SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 ASC LIMIT 10''')
             q=cursor.fetchall()
             df=pd.DataFrame(q)
             pays=df[0].to_list()
             ventes=df[1].to_list()
             context['pays']=pays
             context['ventes']=ventes
-            context['check']=uk
-            print(uk)
-
-    else:
-        uk=0       
+            zipp=zip(pays,ventes)
+            context['zipp']=zipp    
+    else:    
         cursor.execute('''SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 DESC LIMIT 10''')       
         q=cursor.fetchall()
         df=pd.DataFrame(q)
@@ -253,3 +246,25 @@ def delete(dossier):
             os.unlink(os.path.join(root, f))
         for d in dirs:
             shutil.rmtree(os.path.join(root, d))
+            
+            
+            
+
+
+
+
+
+
+
+#  if request.POST.get("ukCheck"):
+#             ukCheck=request.POST['ukCheck']
+#             uk=ukCheck
+#             cursor.execute(f'''SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 DESC OFFSET %(uk)s ROWS LIMIT 10''',{"uk":uk,})
+#             q=cursor.fetchall()
+#             df=pd.DataFrame(q)
+#             pays=df[0].to_list()
+#             ventes=df[1].to_list()
+#             context['pays']=pays
+#             context['ventes']=ventes
+#             context['check']=uk
+#             print(uk)

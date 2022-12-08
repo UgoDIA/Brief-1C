@@ -18,6 +18,10 @@
       
     <h2> Répartition des ventes par pays</h2>
     <form method="post"> {% csrf_token %}
+      <button class="btn btn-outline-dark" type='submit' name="limitAll" value='38' style="margin-top:20px">Tous</button>
+      <a class="btn btn-outline-dark" type='button' href="{% url 'graphPays' %}" style="margin-top:20px">Top 10</a>
+      <button class="btn btn-outline-dark" type='submit' name="flop" value='ASC' style="margin-top:20px">Flop 10</button>
+
       {% comment %} <button class="btn btn-outline-dark" type='submit' name="ukCheck" value='1' style="margin-top:20px">cacher</button>
        <button class="btn btn-outline-dark" type='submit'  name="ukCheckq" value='0' style="margin-top:20px">afficher</button> </div>  
     {% for p in pays%} <button class="btn btn-outline-dark" type='submit' name="nomPays" value={{p}} style="margin-top:20px">{{p}}</button>{%endfor%} {% endcomment %}
@@ -25,38 +29,6 @@
     <canvas id="myChart"  ></canvas>
   </div>
 
-
-
- {% comment %} <script>
-
-   {% comment %} const autocolors = window['chartjs-plugin-autocolors'];
-    Chart.register(autocolors); 
-    
-
-    const ctx = document.getElementById('myChart');
-    new Chart(ctx, {
-      type: 'bar',
-      data: { 
-        labels: [''],
-        datasets: [ {% for cc, vv in zipp %}  {  
-          label:['{{cc}}'],
-          data: [{{vv}}],
-          borderWidth: 1 ,
-        }, {%endfor%} ]
-      },
-      options: {
-         scales: {
-          y: {
-            beginAtZero: true
-          }
-        },
-        legend:{
-          position:'left',
-          align:'end'
-        } 
-      }
-    });
-  </script>      {% endcomment %}
 
   <script>
    
@@ -83,15 +55,21 @@
       data,
       options: {
         plugins:{
+          tooltip:{
+            bodyFont:{
+              size:19,
+              weight:'bold',
+            }
+          },
           datalabels: {
             labels: {
               name: {
                 clamp:true,
-                display:'true',
+                display:'auto',
                 anchor:'end',
                 color:'black',
                 align: 'bottom',
-                font: {size: 16, weight:'bold'},
+                font: {size: 15, weight:'bold'},
                 formatter: function(value, ctx) {
                   return ctx.active
                     ? ctx.dataset.label
@@ -118,12 +96,11 @@
           },
           legend:{
             display:true,
-            
             position:'top',
             labels:{
               padding:20,
               font: {
-                size: 16 },
+                size: 17 },
                 boxWidth: 15,
                 color:'black',
                 weight:'bold',  
@@ -153,7 +130,7 @@
                   weight: 'bold',
                 },
               },
-            }
+            },
           },
         }
       };
