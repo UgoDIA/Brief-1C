@@ -17,11 +17,17 @@
 <div class="chart-container" style="width : 1100px">
       
     <h2> Répartition des ventes par pays</h2>
+    <div>
     <form method="post"> {% csrf_token %}
-      <button class="btn btn-outline-dark" type='submit' name="limitAll" value='38' style="margin-top:20px">Tous</button>
-      <a class="btn btn-outline-dark" type='button' href="{% url 'graphPays' %}" style="margin-top:20px">Top 10</a>
-      <button class="btn btn-outline-dark" type='submit' name="flop" value='ASC' style="margin-top:20px">Flop 10</button>
+      <button class="btn btn-outline-dark" type='submit' name="limitAll" value='38' style="margin-top:20px; font-size: 17px">Tous les Pays</button>
+      <a class="btn btn-outline-dark" type='button' href="{% url 'graphPays' %}" style="margin-top:20px; font-size: 17px">Top 10</a>
+      <button class="btn btn-outline-dark" type='submit' name="flop" value='ASC' style="margin-top:20px; font-size: 17px">Flop 10</button> </div>
+      
+      <div><button class="btn btn-outline-secondary" type='submit' name="allDate" value='allDate' style="margin-top:20px ;font-size: 17px">Toutes les années</button>
+      <button class="btn btn-outline-secondary" type='submit' name="2010" value='2010' style="margin-top:20px; font-size: 17px">2010</button>
+      <button class="btn btn-outline-secondary" type='submit' name="2011" value='2011' style="margin-top:20px; font-size: 17px">2011</button>
 
+    </div>
       {% comment %} <button class="btn btn-outline-dark" type='submit' name="ukCheck" value='1' style="margin-top:20px">cacher</button>
        <button class="btn btn-outline-dark" type='submit'  name="ukCheckq" value='0' style="margin-top:20px">afficher</button> </div>  
     {% for p in pays%} <button class="btn btn-outline-dark" type='submit' name="nomPays" value={{p}} style="margin-top:20px">{{p}}</button>{%endfor%} {% endcomment %}

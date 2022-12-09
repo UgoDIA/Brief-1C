@@ -201,7 +201,6 @@ def accueil(request):
 def graphPays(request):
     context={}
     cursor=connection.cursor()
-    
     if request.method =='POST':
         if request.POST.get("limitAll"):
             cursor.execute('''SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 DESC LIMIT 38'''),
@@ -213,6 +212,7 @@ def graphPays(request):
             context['ventes']=ventes
             zipp=zip(pays,ventes)
             context['zipp']=zipp
+            return render(request,'graphPays.html',context)
             
         if request.POST.get("flop"):  
             cursor.execute('''SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 ASC LIMIT 10''')
@@ -223,7 +223,8 @@ def graphPays(request):
             context['pays']=pays
             context['ventes']=ventes
             zipp=zip(pays,ventes)
-            context['zipp']=zipp    
+            context['zipp']=zipp
+            return render(request,'graphPays.html',context)   
     else:    
         cursor.execute('''SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 DESC LIMIT 10''')       
         q=cursor.fetchall()
@@ -234,10 +235,8 @@ def graphPays(request):
         context['ventes']=ventes
         zipp=zip(pays,ventes)
         context['zipp']=zipp
+        return render(request,'graphPays.html',context)
         
-        # print(zipp)
-    
-    # print(q[2])
     return render(request,'graphPays.html',context)
     
 def delete(dossier):
@@ -268,3 +267,18 @@ def delete(dossier):
 #             context['ventes']=ventes
 #             context['check']=uk
 #             print(uk)
+
+
+
+# if request.method =='POST':
+#             if request.POST.get("allDate"):
+#                 cursor.execute('''SELECT pays, COUNT(pays) FROM ventes INNER JOIN "detailsVentes" on ventes."noFacture" = "detailsVentes"."noFacture" GROUP BY pays ORDER BY 2 DESC LIMIT 10''')
+#                 q=cursor.fetchall()
+#                 df=pd.DataFrame(q)
+#                 pays=df[0].to_list()
+#                 ventes=df[1].to_list()
+#                 context['pays']=pays
+#                 context['ventes']=ventes
+#                 zipp=zip(pays,ventes)
+#                 context['zipp']=zipp
+#         return render(request,'graphPays.html',context)
