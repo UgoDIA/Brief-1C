@@ -1,6 +1,7 @@
 .chart-container{
     display:block;
-    margin:0 auto;
+    /* margin:0 auto; */
+    margin-left: 40px;
     position:relative;
     height:500px; 
     width:1100px;
@@ -13,3 +14,4 @@
         height:45%;
     }
 }
+

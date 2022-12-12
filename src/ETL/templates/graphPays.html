@@ -11,30 +11,56 @@
 {% endblock %}
 {% block content %}
 
-
-
-
-<div class="chart-container" style="width : 1100px">
       
-    <h2> Répartition des ventes par pays</h2>
+    <h2 style="text-align : center"> Répartition des ventes par pays</h2 >
+    <div class="chart-container" style="width : 1000px">
     <div>
     <form method="post"> {% csrf_token %}
-      <button class="btn btn-outline-dark" type='submit' name="limitAll" value='38' style="margin-top:20px; font-size: 17px">Tous les Pays</button>
-      <a class="btn btn-outline-dark" type='button' href="{% url 'graphPays' %}" style="margin-top:20px; font-size: 17px">Top 10</a>
+      {% if filtrep == "allPa" %} 
+      <button class="btn btn-dark" type='submit' name="tous" value='38' style="margin-top:20px; font-size: 17px">Tous les Pays</button>
+      {% else %}
+      <button class="btn btn-outline-dark" type='submit' name="tous" value='38' style="margin-top:20px; font-size: 17px">Tous les Pays</button>
+      {% endif %}
+      {% if filtrep == "top" %} 
+      <button class="btn btn-dark" type='sumbit' name='top' value='DESC' style="margin-top:20px; font-size: 17px">Top 10</button>
+      {% else %}
+      <button class="btn btn-outline-dark" type='sumbit' name='top' value='DESC' style="margin-top:20px; font-size: 17px">Top 10</button>
+      {% endif %}
+      {% if filtrep == "flop" %} 
+      <button class="btn btn-dark" type='submit' name="flop" value='ASC' style="margin-top:20px; font-size: 17px">Flop 10</button> </div>
+      {% else %}
       <button class="btn btn-outline-dark" type='submit' name="flop" value='ASC' style="margin-top:20px; font-size: 17px">Flop 10</button> </div>
-      
-      <div><button class="btn btn-outline-secondary" type='submit' name="allDate" value='allDate' style="margin-top:20px ;font-size: 17px">Toutes les années</button>
+      {% endif %}
+      <div>
+      {% if filtred == "allD" %} 
+      <button class="btn btn-secondary" type='submit' name="allDate" value='allDate' style="margin-top:20px ;font-size: 17px">Toutes les années</button>
+      {% else %}
+      <button class="btn btn-outline-secondary" type='submit' name="allDate" value='allDate' style="margin-top:20px ;font-size: 17px">Toutes les années</button>
+      {% endif %}
+      {% if filtred == "2010" %} 
+      <button class="btn btn-secondary" type='submit' name="2010" value='2010' style="margin-top:20px; font-size: 17px">2010</button>
+      {% else %}
       <button class="btn btn-outline-secondary" type='submit' name="2010" value='2010' style="margin-top:20px; font-size: 17px">2010</button>
+      {% endif %}
+      {% if filtred == "2011" %} 
+      <button class="btn btn-secondary" type='submit' name="2011" value='2011' style="margin-top:20px; font-size: 17px">2011</button>
+      {% else %}
       <button class="btn btn-outline-secondary" type='submit' name="2011" value='2011' style="margin-top:20px; font-size: 17px">2011</button>
-
+      {% endif %}
     </div>
       {% comment %} <button class="btn btn-outline-dark" type='submit' name="ukCheck" value='1' style="margin-top:20px">cacher</button>
        <button class="btn btn-outline-dark" type='submit'  name="ukCheckq" value='0' style="margin-top:20px">afficher</button> </div>  
     {% for p in pays%} <button class="btn btn-outline-dark" type='submit' name="nomPays" value={{p}} style="margin-top:20px">{{p}}</button>{%endfor%} {% endcomment %}
     </form>
+    
     <canvas id="myChart"  ></canvas>
   </div>
 
+  <div class= 'container'>
+    <div style=" margin-left : 820px ; margin-top:-380px; width:550px">
+      
+    <canvas id="myChart2"  ></canvas> </div>
+  </div>
 
   <script>
    
@@ -147,6 +173,38 @@
       config
     );
     </script> 
+
+
+    <script>
+      const data2 = {
+        labels: [
+        'Red',
+        'Blue',
+        'Yellow'
+      ],
+      datasets: [{
+        label: 'Ventes',
+        data: [300, 50, 100],
+        hoverOffset: 30
+      }]
+    };
+      const config2 = {
+        type: 'pie',
+        data:data2,
+        options: {
+          plugins:{
+            },
+            scales: {
+            },
+          }
+        };
+
+    const myChart2 = new Chart(
+      document.getElementById('myChart2'),
+      config2
+    );
+
+    </script>
   
 
 

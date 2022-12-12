@@ -33,3 +33,13 @@ class Detailsventes(models.Model):
     class Meta:
         db_table = 'detailsVentes'
         unique_together = ('nofacture', 'codeproduit')
+        
+        
+class Filtre(models.Model):
+    nfiltre = models.AutoField(db_column='nFiltre', primary_key=True)  # Field name made lowercase.
+    filtrepays = models.CharField(db_column='filtrePays', max_length=10, blank=True, null=True)
+    filtredate = models.CharField(db_column='filtreDate', max_length=10, blank=True, null=True)  # Field name made lowercase.     
+    filtreproduits = models.CharField(db_column='filtreProduits', max_length=10, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        db_table = 'filtre'
