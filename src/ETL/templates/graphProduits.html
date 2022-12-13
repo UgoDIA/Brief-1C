@@ -13,15 +13,15 @@
 
       
     
-    <div class="chart-container" style="width : 1000px">
+<div class="chart-container" style="width : 1000px">
       
     <div>
-      <h2 style="text-align : center"> Répartition des ventes par pays</h2 >
+      <h2 style="text-align : center"> Répartition des ventes par produits</h2 >
     <form method="post"> {% csrf_token %}
       {% if filtrep == "allPa" %} 
-      <button class="btn btn-dark" type='submit' name="tous" value='38' style="margin-top:20px; font-size: 17px">Tous les Pays</button>
+      <button class="btn btn-dark" type='submit' name="tous" value='38' style="margin-top:20px; font-size: 17px">Tous les Produits</button>
       {% else %}
-      <button class="btn btn-outline-dark" type='submit' name="tous" value='38' style="margin-top:20px; font-size: 17px">Tous les Pays</button>
+      <button class="btn btn-outline-dark" type='submit' name="tous" value='38' style="margin-top:20px; font-size: 17px">Tous les Produits</button>
       {% endif %}
       {% if filtrep == "top" %} 
       <button class="btn btn-dark" type='sumbit' name='top' value='DESC' style="margin-top:20px; font-size: 17px">Top 10</button>
@@ -59,11 +59,11 @@
     
   
     <div style=" margin-left : 750px ; margin-top:-490px; width:700px">
-      <h2 style="text-align : center"> Top 5 des produits pour {{filtre.filtretoppays}}</h2 >
+      <h2 style="text-align : center"> Top 5 des pays pour {{filtre.filtreproduits}}</h2 >
       <form method="post"> {% csrf_token %}
         <select class="form-select" style='width :200px;margin:0 auto; margin-top:30px;' name="filtretop">
           
-          <option selected>{{filtre.filtretoppays}}</option>
+          <option selected>{{filtre.filtreproduits}}</option>
           {% for p in pays  %}
           <option>{{p}}</option>
           {%endfor%}  
@@ -143,7 +143,7 @@
             display:true,
             position:'top',
             labels:{
-              padding:20,
+              padding:10,
               font: {
                 size: 17 },
                 boxWidth: 15,
@@ -224,7 +224,7 @@
               labels: {
                 name: {
                   clamp:true,
-                  display:'true',
+                  display:'auto',
                   anchor:'end',
                   color:'black',
                   align: 'bottom',
@@ -237,7 +237,7 @@
                 },
                 value: {
                   clamp:true,
-                  display:'true',
+                  display:'auto',
                   anchor:'center',
                   color:'black',
                   align: 'top',
