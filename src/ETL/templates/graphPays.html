@@ -12,9 +12,11 @@
 {% block content %}
 
       
-    <h2 style="text-align : center"> Répartition des ventes par pays</h2 >
+    
     <div class="chart-container" style="width : 1000px">
+      
     <div>
+      <h2 style="text-align : center"> Répartition des ventes par pays</h2 >
     <form method="post"> {% csrf_token %}
       {% if filtrep == "allPa" %} 
       <button class="btn btn-dark" type='submit' name="tous" value='38' style="margin-top:20px; font-size: 17px">Tous les Pays</button>
@@ -48,18 +50,28 @@
       <button class="btn btn-outline-secondary" type='submit' name="2011" value='2011' style="margin-top:20px; font-size: 17px">2011</button>
       {% endif %}
     </div>
-      {% comment %} <button class="btn btn-outline-dark" type='submit' name="ukCheck" value='1' style="margin-top:20px">cacher</button>
-       <button class="btn btn-outline-dark" type='submit'  name="ukCheckq" value='0' style="margin-top:20px">afficher</button> </div>  
-    {% for p in pays%} <button class="btn btn-outline-dark" type='submit' name="nomPays" value={{p}} style="margin-top:20px">{{p}}</button>{%endfor%} {% endcomment %}
-    </form>
+         </form>
     
     <canvas id="myChart"  ></canvas>
   </div>
 
   <div class= 'container'>
-    <div style=" margin-left : 820px ; margin-top:-380px; width:550px">
+    
+  
+    <div style=" margin-left : 750px ; margin-top:-490px; width:700px">
+      <h2 style="text-align : center"> Top 5 des produits pour {{filtre.filtretoppays}}</h2 >
+      <form method="post"> {% csrf_token %}
+        <select class="form-select" style='width :200px;margin:0 auto; margin-top:30px;' name="filtretop">
+          
+          <option selected>{{filtre.filtretoppays}}</option>
+          {% for p in pays  %}
+          <option>{{p}}</option>
+          {%endfor%}  
+      </select>
+      <input class="btn btn-outline-secondary" style="margin-left:490px; margin-top: -68px" type="submit" value="Afficher">
+      </form>
       
-    <canvas id="myChart2"  ></canvas> </div>
+    <canvas style="margin-top: -25px; " id="myChart2"  ></canvas> </div>
   </div>
 
   <script>
@@ -86,6 +98,7 @@
       type: 'bar',
       data,
       options: {
+        
         plugins:{
           tooltip:{
             bodyFont:{
@@ -137,7 +150,7 @@
                 color:'black',
                 weight:'bold',  
               }
-            }
+            },
           },
           scales: {
             x:{
@@ -173,26 +186,81 @@
       config
     );
     </script> 
-
+    
 
     <script>
       const data2 = {
-        labels: [
-        'Red',
-        'Blue',
-        'Yellow'
-      ],
+        labels: [{% for prod  in topprod %}'{{prod}}',{% endfor %}],
       datasets: [{
         label: 'Ventes',
-        data: [300, 50, 100],
-        hoverOffset: 30
+        data: {{prodvente}},
+        hoverOffset: 30,
       }]
     };
       const config2 = {
         type: 'pie',
         data:data2,
         options: {
+          layout:{
+            padding:60
+          },
           plugins:{
+            tooltip:{
+              titleFont:{
+                size:16,
+                weight:'bold',
+              },
+              bodyFont:{
+                size:14,
+                weight:'bold',
+              },
+            },
+            datalabels: {
+              labels: {
+                name: {
+                  clamp:true,
+                  display:'true',
+                  anchor:'end',
+                  color:'black',
+                  align: 'bottom',
+                  font: {size: 15, weight:'bold'},
+                  formatter: function(value, ctx) {
+                    return ctx.active
+                      ? ctx.chart.data.labels[ctx.dataIndex]
+                      : ctx.chart.data.labels[ctx.dataIndex];
+                  }
+                },
+                value: {
+                  clamp:true,
+                  display:'true',
+                  anchor:'center',
+                  color:'black',
+                  align: 'top',
+                  font: {size: 16, weight:'bold'},
+                  borderWidth: 2,
+                  borderRadius: 4,
+                  formatter: function(value, ctx) {
+                    console.log(ctx)
+                    return ctx.active
+                      ? value
+                      : Math.round(value * 1000) / 1000;
+                  },
+                  padding: 0,
+                }
+              }
+            },
+            legend:{
+              display:true,
+              position:'top',
+              labels:{
+                padding:9,
+                font: {
+                  size: 14 },
+                  boxWidth: 15,
+                  color:'black',
+                  weight:'bold',  
+                }
+              },
             },
             scales: {
             },
@@ -206,6 +274,7 @@
 
     </script>
   
+
 
 
 {% endblock %}

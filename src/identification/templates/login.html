@@ -7,7 +7,7 @@
 
 {% block content %}
 
-<div class="container">
+<div class="container" >
     {% if messages %}
     {% for message in messages %}
 <div class="alert alert-danger alert-dismissible fade show">
@@ -16,7 +16,7 @@
 </div>
 {% endfor %}
 {% endif %}
-<h1>Connexion</h1>
+<h1 style = "text-align : center">Connexion</h1>
 
 
 
@@ -24,23 +24,23 @@
 <form action="" method=POST>
     {% csrf_token %}
 
-<form>
+<form >
 
-<div class="mb-3 w-50">
+<div class="mb-3 w-50" style="margin:0 auto;">
 <label for="exampleInputEmail1" class="form-label">Identifiant</label>
 <input type="text" class="form-control" name="identifiant" aria-describedby="emailHelp">
 
 </div>
-<div class="mb-3 w-50">
+<div class="mb-3 w-50" style="margin:0 auto;">
 <label for="exampleInputPassword1" class="form-label">Mot de passe</label>
 <input type="password" class="form-control" name="password">
+
+
 </div>
-
-
 
     
 
-    <input type="submit" value="Se connecter" class="btn btn-secondary">
+    <input style="margin:20px; margin-left: 575px; font-size:20px"  type="submit" value="Se connecter" class="btn btn-secondary"> 
 
 </form>
 
