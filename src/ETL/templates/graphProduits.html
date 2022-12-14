@@ -63,7 +63,7 @@
       <form method="post"> {% csrf_token %}
         <select class="form-select" style='width :200px;margin:0 auto; margin-top:30px;' name="filtretop">
           
-          <option selected>{{filtreselected}}</option>
+          <option value="{{filtrecode}}" selected>{{filtreselected}}</option>
           {% for code, nom in zipprod %}
           <option value={{code}}>{{nom}}</option>
           {%endfor%}  

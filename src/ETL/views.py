@@ -788,7 +788,9 @@ def graphProduits(request):
             df=pd.DataFrame(q)
             pf=pd.DataFrame(prod)
             filtreselected=Produits.objects.get(codeproduit=filtreproduits)
+            filtrecode=filtreselected.codeproduit
             filtreselected=filtreselected.nomproduit
+            print(filtrecode)
             topprod=pf[0].to_list()
             prodvente=pf[1].to_list()
             codeprod=df[0].to_list()
@@ -805,6 +807,7 @@ def graphProduits(request):
             context['filtred']=filtred
             context['filtrep']=filtrep
             context['filtre']=filtre
+            context['filtrecode']=filtrecode
             context['filtreselected']=filtreselected
             return render(request,'graphProduits.html',context)
     else:
