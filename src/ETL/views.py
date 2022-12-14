@@ -509,29 +509,35 @@ def graphProduits(request):
             filtreproduits=filtre.filtreproduits
             filtretoppays=filtre.filtretoppays
             if filtred=="allD":
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY "nomProduit" ORDER BY 2 DESC LIMIT 10 ''')
+                cursor.execute(f'''SELECT  produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY  produits."codeProduit", "nomProduit" ORDER BY 3 DESC LIMIT 10 ''')
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit"  = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
             else:       
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY "nomProduit" ORDER BY 2 DESC LIMIT 10''',{"filtred":filtred})
+                cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 DESC LIMIT 10''',{"filtred":filtred})
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit"  = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
             prod=cursor.fetchall()
             df=pd.DataFrame(q)
             pf=pd.DataFrame(prod)
             topprod=pf[0].to_list()
             prodvente=pf[1].to_list()
-            pays=df[0].to_list()
-            ventes=df[1].to_list()
+            codeprod=df[0].to_list()
+            pays=df[1].to_list()
+            ventes=df[2].to_list()
+            filtreselected=Produits.objects.get(codeproduit=filtreproduits)
+            filtreselected=filtreselected.nomproduit
             context['pays']=pays
             context['ventes']=ventes
             zipp=zip(pays,ventes)
+            zipprod=zip(codeprod,pays)
+            context['zipprod']=zipprod
             context['zipp']=zipp
             context['topprod']=topprod
             context['prodvente']=prodvente
             context['filtred']=filtred
             context['filtrep']=filtrep
             context['filtre']=filtre
+            context['filtreselected']=filtreselected
             return render(request,'graphProduits.html',context)
         
         elif request.POST.get("tous"):
@@ -542,29 +548,36 @@ def graphProduits(request):
             filtreproduits=filtre.filtreproduits
             filtretoppays=filtre.filtretoppays
             if filtred=="allD":
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY "nomProduit" ORDER BY 2 DESC''')
+                cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 DESC''')
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
             else:       
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY "nomProduit" ORDER BY 2 DESC''',{"filtred":filtred})
+                cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY produits."codeProduit", "nomProduit" ORDER BY 2 DESC''',{"filtred":filtred})
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
             prod=cursor.fetchall()
             df=pd.DataFrame(q)
             pf=pd.DataFrame(prod)
             topprod=pf[0].to_list()
             prodvente=pf[1].to_list()
-            pays=df[0].to_list()
-            ventes=df[1].to_list()
+            codeprod=df[0].to_list()
+            pays=df[1].to_list()
+            ventes=df[2].to_list()
+            filtreselected=Produits.objects.get(codeproduit=filtreproduits)
+            filtreselected=filtreselected.nomproduit
             context['pays']=pays
             context['ventes']=ventes
             zipp=zip(pays,ventes)
+            zipprod=zip(codeprod,pays)
             context['zipp']=zipp
+            context['zipprod']=zipprod
             context['topprod']=topprod
             context['prodvente']=prodvente
             context['filtred']=filtred
             context['filtrep']=filtrep
             context['filtre']=filtre
+            context['filtreselected']=filtreselected
+
             return render(request,'graphProduits.html',context)
             
         elif request.POST.get("flop"):
@@ -575,29 +588,35 @@ def graphProduits(request):
             filtreproduits=filtre.filtreproduits
             filtretoppays=filtre.filtretoppays
             if filtred=="allD":
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY "nomProduit" ORDER BY 2 ASC LIMIT 10 ''')
+                cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 ASC LIMIT 10 ''')
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
             else:       
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY "nomProduit" ORDER BY 2 ASC LIMIT 10''',{"filtred":filtred})
+                cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 ASC LIMIT 10''',{"filtred":filtred})
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
             prod=cursor.fetchall()
             df=pd.DataFrame(q)
             pf=pd.DataFrame(prod)
             topprod=pf[0].to_list()
             prodvente=pf[1].to_list()
-            pays=df[0].to_list()
-            ventes=df[1].to_list()
+            codeprod=df[0].to_list()
+            pays=df[1].to_list()
+            ventes=df[2].to_list()
+            filtreselected=Produits.objects.get(codeproduit=filtreproduits)
+            filtreselected=filtreselected.nomproduit
             context['pays']=pays
             context['ventes']=ventes
+            zipprod=zip(codeprod,pays)
             zipp=zip(pays,ventes)
             context['zipp']=zipp
+            context['zipprod']=zipprod
             context['topprod']=topprod
             context['prodvente']=prodvente
             context['filtred']=filtred
             context['filtrep']=filtrep
             context['filtre']=filtre
+            context['filtreselected']=filtreselected
             return render(request,'graphProduits.html',context)
         
         elif request.POST.get("allDate"):
@@ -608,35 +627,41 @@ def graphProduits(request):
             filtreproduits=filtre.filtreproduits
             filtretoppays=filtre.filtretoppays
             if filtrep=="top":
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY "nomProduit" ORDER BY 2 DESC LIMIT 10 ''')
+                cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 DESC LIMIT 10 ''')
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
 
             elif filtrep=="allPa":
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY "nomProduit" ORDER BY 2 DESC''')
+                cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 DESC''')
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
 
             else:
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY "nomProduit" ORDER BY 2 ASC LIMIT 10 ''')
+                cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 ASC LIMIT 10 ''')
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
             prod=cursor.fetchall()
             df=pd.DataFrame(q)
             pf=pd.DataFrame(prod)
+            filtreselected=Produits.objects.get(codeproduit=filtreproduits)
+            filtreselected=filtreselected.nomproduit
             topprod=pf[0].to_list()
             prodvente=pf[1].to_list()
-            pays=df[0].to_list()
-            ventes=df[1].to_list()
+            codeprod=df[0].to_list()
+            pays=df[1].to_list()
+            ventes=df[2].to_list()
             context['pays']=pays
             context['ventes']=ventes
+            zipprod=zip(codeprod,pays)
             zipp=zip(pays,ventes)
             context['zipp']=zipp
+            context['zipprod']=zipprod
             context['topprod']=topprod
             context['prodvente']=prodvente
             context['filtred']=filtred
             context['filtrep']=filtrep
             context['filtre']=filtre
+            context['filtreselected']=filtreselected
             return render(request,'graphProduits.html',context)
         
         elif request.POST.get("2010"):
@@ -647,33 +672,39 @@ def graphProduits(request):
             filtreproduits=filtre.filtreproduits
             filtretoppays=filtre.filtretoppays
             if filtrep=="top":
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY "nomProduit" ORDER BY 2 DESC LIMIT 10''',{"filtred":filtred})
+                cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 DESC LIMIT 10''',{"filtred":filtred})
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
             elif filtrep=="allPa":
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY "nomProduit" ORDER BY 2 DESC''',{"filtred":filtred})
+                cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 DESC''',{"filtred":filtred})
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
             else:
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY "nomProduit" ORDER BY 2 ASC LIMIT 10''',{"filtred":filtred})
+                cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 ASC LIMIT 10''',{"filtred":filtred})
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
             prod=cursor.fetchall()
             df=pd.DataFrame(q)
             pf=pd.DataFrame(prod)
+            filtreselected=Produits.objects.get(codeproduit=filtreproduits)
+            filtreselected=filtreselected.nomproduit
             topprod=pf[0].to_list()
             prodvente=pf[1].to_list()
-            pays=df[0].to_list()
-            ventes=df[1].to_list()
+            codeprod=df[0].to_list()
+            pays=df[1].to_list()
+            ventes=df[2].to_list()
             context['pays']=pays
             context['ventes']=ventes
+            zipprod=zip(codeprod,pays)
             zipp=zip(pays,ventes)
             context['zipp']=zipp
+            context['zipprod']=zipprod
             context['topprod']=topprod
             context['prodvente']=prodvente
             context['filtred']=filtred
             context['filtre']=filtre
             context['filtrep']=filtrep
+            context['filtreselected']=filtreselected
             return render(request,'graphProduits.html',context)
         
         elif request.POST.get("2011"):
@@ -684,34 +715,40 @@ def graphProduits(request):
             filtreproduits=filtre.filtreproduits
             filtretoppays=filtre.filtretoppays
             if filtrep=="top":
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY "nomProduit" ORDER BY 2 DESC LIMIT 10''',{"filtred":filtred})
+                cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 DESC LIMIT 10''',{"filtred":filtred})
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
 
             elif filtrep=="allPa":
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY "nomProduit" ORDER BY 2 DESC''',{"filtred":filtred})
+                cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 DESC''',{"filtred":filtred})
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
             else:
-                cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY "nomProduit" ORDER BY 2 ASC LIMIT 10''',{"filtred":filtred})
+                cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 ASC LIMIT 10''',{"filtred":filtred})
                 q=cursor.fetchall()
-                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
+                cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
             prod=cursor.fetchall()
             pf=pd.DataFrame(prod)
             df=pd.DataFrame(q)
             topprod=pf[0].to_list()
             prodvente=pf[1].to_list()
-            pays=df[0].to_list()
-            ventes=df[1].to_list()
+            filtreselected=Produits.objects.get(codeproduit=filtreproduits)
+            filtreselected=filtreselected.nomproduit
+            codeprod=df[0].to_list()
+            pays=df[1].to_list()
+            ventes=df[2].to_list()
             context['pays']=pays
             context['ventes']=ventes
+            zipprod=zip(codeprod,pays)
             zipp=zip(pays,ventes)
+            context['zipprod']=zipprod
             context['zipp']=zipp
             context['topprod']=topprod
             context['prodvente']=prodvente
             context['filtred']=filtred
             context['filtrep']=filtrep
             context['filtre']=filtre
+            context['filtreselected']=filtreselected
             return render(request,'graphProduits.html',context)
         elif request.POST.get("filtretop"):
             y=request.POST['filtretop']
@@ -722,47 +759,53 @@ def graphProduits(request):
             filtreproduits=filtre.filtreproduits
             if filtrep=="top":
                 if filtred=="allD":
-                    cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY "nomProduit" ORDER BY 2 DESC LIMIT 10 ''')
+                    cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 DESC LIMIT 10 ''')
                     q=cursor.fetchall()
-                    cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})
+                    cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})
                 else:       
-                    cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY "nomProduit" ORDER BY 2 DESC LIMIT 10''',{"filtred":filtred})
+                    cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 DESC LIMIT 10''',{"filtred":filtred})
                     q=cursor.fetchall()
-                    cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
+                    cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
             elif filtrep=="allPa":
                 if filtred=="allD":
-                    cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY "nomProduit" ORDER BY 2 DESC''')
+                    cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 DESC''')
                     q=cursor.fetchall()
-                    cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
+                    cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
                 else:       
-                    cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY "nomProduit" ORDER BY 2 DESC''',{"filtred":filtred})
+                    cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 DESC''',{"filtred":filtred})
                     q=cursor.fetchall()
-                    cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
+                    cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
             else:
                 if filtred=="allD":
-                    cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY "nomProduit" ORDER BY 2 ASC LIMIT 10 ''')
+                    cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 ASC LIMIT 10 ''')
                     q=cursor.fetchall()
-                    cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
+                    cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
                 else:       
-                    cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY "nomProduit" ORDER BY 2 ASC LIMIT 10''',{"filtred":filtred})
+                    cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" INNER JOIN ventes ON "detailsVentes"."noFacture"=ventes."noFacture" WHERE EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 ASC LIMIT 10''',{"filtred":filtred})
                     q=cursor.fetchall()
-                    cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE "nomProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
+                    cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" WHERE produits."codeProduit" = %(filtreproduits)s AND EXTRACT(YEAR FROM ventes."dateFacture")=%(filtred)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,"filtred":filtred})       
             prod=cursor.fetchall()
             df=pd.DataFrame(q)
             pf=pd.DataFrame(prod)
+            filtreselected=Produits.objects.get(codeproduit=filtreproduits)
+            filtreselected=filtreselected.nomproduit
             topprod=pf[0].to_list()
             prodvente=pf[1].to_list()
-            pays=df[0].to_list()
-            ventes=df[1].to_list()
+            codeprod=df[0].to_list()
+            pays=df[1].to_list()
+            ventes=df[2].to_list()
             context['pays']=pays
             context['ventes']=ventes
+            zipprod=zip(codeprod,pays)
             zipp=zip(pays,ventes)
+            context['zipprod']=zipprod
             context['zipp']=zipp
             context['topprod']=topprod
             context['prodvente']=prodvente
             context['filtred']=filtred
             context['filtrep']=filtrep
             context['filtre']=filtre
+            context['filtreselected']=filtreselected
             return render(request,'graphProduits.html',context)
     else:
         Filtre.objects.filter(nfiltre=1).update(filtrepays='top')
@@ -772,26 +815,34 @@ def graphProduits(request):
         filtreproduits=filtre.filtreproduits
         filtred=filtre.filtredate    
         filtretoppays=filtre.filtretoppays
-        cursor.execute(f'''SELECT "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY "nomProduit" ORDER BY 2 DESC LIMIT 10 ''')       
+        cursor.execute(f'''SELECT produits."codeProduit", "nomProduit", COUNT(*) FROM produits INNER JOIN "detailsVentes" on produits."codeProduit" = "detailsVentes"."codeProduit" GROUP BY produits."codeProduit", "nomProduit" ORDER BY 3 DESC LIMIT 10 ''')       
         q=cursor.fetchall()
-        cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" Where "nomProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
+        cursor.execute(f'''SELECT pays,count(*) FROM ventes INNER JOIN "detailsVentes" ON ventes."noFacture"="detailsVentes"."noFacture" INNER JOIN produits ON "detailsVentes"."codeProduit" = produits."codeProduit" Where produits."codeProduit" = %(filtreproduits)s GROUP BY pays ORDER BY 2 DESC LIMIT 5''',{"filtreproduits":filtreproduits,})       
         prod=cursor.fetchall()
         df=pd.DataFrame(q)
         pf=pd.DataFrame(prod)
         topprod=pf[0].to_list()
         prodvente=pf[1].to_list()
-        pays=df[0].to_list()
-        ventes=df[1].to_list()
+        filtreselected=Produits.objects.get(codeproduit=filtreproduits)
+        filtreselected=filtreselected.nomproduit
+        # topprod=[i[0] for i in prod]
+        # prodvente=[i[1] for i in prod]
+        codeprod=df[0].to_list()
+        pays=df[1].to_list()
+        ventes=df[2].to_list()
         context['filtre']=filtre
         context['pays']=pays
         context['ventes']=ventes
         context['topprod']=topprod
         context['prodvente']=prodvente
+        zipprod=zip(codeprod,pays)
         zipp=zip(pays,ventes)
         context['zipp']=zipp
+        context['zipprod']=zipprod
         context['filtred']=filtred
         context['filtrep']=filtrep
         context['filtreproduits']=filtreproduits
+        context['filtreselected']=filtreselected
         return render(request,'graphProduits.html',context)
         
     return render(request,'graphProduits.html',context)

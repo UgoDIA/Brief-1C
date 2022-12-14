@@ -123,10 +123,10 @@
   <form action="{% url 'save' %}" method="POST"  enctype="multipart/form-data">
     {% csrf_token %}
     <button type ="submit" id='btUp2' style= " font-size: 20px" class="btn btn-warning btn-block btn-outlined"> Enregistrer dans la base de données</button>
-    <a href="{% url 'upload' %}" class=" btn btn-danger " style="font-size:20px; margin-left:20px"" role="button" >Annuler</a>
+    <a href="{% url 'upload' %}" class=" btn btn-danger " style="font-size:20px; margin-left:20px" role="button" >Annuler</a>
   </form>
   {% endif %} 
-  <a href="{% url 'accueil' %}" class=" btn btn-secondary " style="font-size:20px; margin-top:20px"" role="button" >Retour à l'accueil</a>
+  <a href= "{% url 'accueil' %}" class=" btn btn-secondary " style="font-size:20px; margin-top:20px"" role="button" >Retour à l'accueil</a>
 
     </div>
 

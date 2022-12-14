@@ -59,19 +59,24 @@
     
   
     <div style=" margin-left : 750px ; margin-top:-490px; width:700px">
-      <h2 style="text-align : center"> Top 5 des pays pour {{filtre.filtreproduits}}</h2 >
+      <h2 style="text-align : center"> Top 5 des pays pour {{filtreselected}}</h2 >
       <form method="post"> {% csrf_token %}
         <select class="form-select" style='width :200px;margin:0 auto; margin-top:30px;' name="filtretop">
           
-          <option selected>{{filtre.filtreproduits}}</option>
-          {% for p in pays  %}
-          <option>{{p}}</option>
+          <option selected>{{filtreselected}}</option>
+          {% for code, nom in zipprod %}
+          <option value={{code}}>{{nom}}</option>
           {%endfor%}  
       </select>
       <input class="btn btn-outline-secondary" style="margin-left:470px; margin-top: -68px" type="submit" value="Afficher">
       </form>
       
     <canvas style="margin-top: -25px; " id="myChart2"  ></canvas> </div>
+  </div>
+  <div class='container' style="margin-top: -100px">
+    <a href= "{% url 'accueil' %}" class=" btn btn-secondary " style="font-size:17px;" role="button" >Retour à l'accueil</a>
+    <a href= "{% url 'graphPays' %}" class=" btn btn-dark " style="font-size:17px;" role="button" >Ventes par pays</a>
+
   </div>
 
   <script>
@@ -260,7 +265,7 @@
               labels:{
                 padding:9,
                 font: {
-                  size: 14 },
+                  size: 16 },
                   boxWidth: 15,
                   color:'black',
                   weight:'bold',  
