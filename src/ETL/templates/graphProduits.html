@@ -186,10 +186,22 @@
       };
 
     // render init block
+    const ctx=document.getElementById('myChart');
     const myChart = new Chart(
-      document.getElementById('myChart'),
+      ctx,
       config
     );
+
+    function clickHandler(click){
+      const points = myChart.getElementsAtEventForMode(click, 'nearest' , {intersect:true}, true);
+      if (points.length) {
+        const firstPoint = points[0];
+        value= myChart.data.datasets[firstPoint.datasetIndex].label[0]
+        console.log(value)
+        window.location.replace("filtreProduits/"+value); 
+      }
+    }
+    ctx.onclick = clickHandler;
     </script> 
     
 

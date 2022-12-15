@@ -34,6 +34,9 @@ urlpatterns = [
     path('ETL/accueil/',views.accueil, name='accueil'),
     path('ETL/visualisation/pays',views.graphPays, name='graphPays'),
     path('ETL/visualisation/produits',views.graphProduits, name='graphProduits'),
+    path('ETL/visualisation/filtrePays/<str:pays>',views.filtrePays, name='filtrePays'),
+    path('ETL/visualisation/filtreProduits/<str:produits>',views.filtreProduits, name='filtreProduits'),
+    
 ]
 
 
