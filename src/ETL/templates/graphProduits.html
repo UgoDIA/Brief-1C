@@ -61,14 +61,13 @@
     <div style=" margin-left : 750px ; margin-top:-490px; width:700px">
       <h2 style="text-align : center"> Top 5 des pays pour {{filtreselected}}</h2 >
       <form method="post"> {% csrf_token %}
-        <select class="form-select" style='width :200px;margin:0 auto; margin-top:30px;' name="filtretop">
-          
-          <option value="{{filtrecode}}" selected>{{filtreselected}}</option>
+        <input class="form-select" list="datalistOptions" placeholder="{{filtreselected}}" style='width :210px;margin:0 auto; margin-top:30px;border: 2px solid grey;' name="filtretop">          
+        <datalist id="datalistOptions" >
           {% for code, nom in zipprod %}
-          <option value={{code}}>{{nom}}</option>
+          <option placeholder={{nom}} value={{code}}>{{nom}}</option>
           {%endfor%}  
-      </select>
-      <input class="btn btn-outline-secondary" style="margin-left:470px; margin-top: -68px" type="submit" value="Afficher">
+        </datalist>
+      <input class="btn btn-outline-secondary" style="margin-left:500px; margin-top: -68px" type="submit" value="Afficher">
       </form>
       
     <canvas style="margin-top: -25px; " id="myChart2"  ></canvas> </div>
@@ -78,6 +77,7 @@
     <a href= "{% url 'graphPays' %}" class=" btn btn-dark " style="font-size:17px;" role="button" >Ventes par pays</a>
 
   </div>
+  
 
   <script>
    
@@ -172,6 +172,7 @@
                 },
               },
               beginAtZero: true,
+              suggestedMax:Math.max(...{{ventes}})+0.5,
               title:{
                 display:true,
                 text:'Nombre de ventes',

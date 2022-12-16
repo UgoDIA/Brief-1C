@@ -61,13 +61,12 @@
     <div style=" margin-left : 750px ; margin-top:-490px; width:700px">
       <h2 style="text-align : center"> Top 5 des produits pour {{filtre.filtretoppays}}</h2 >
       <form method="post"> {% csrf_token %}
-        <select class="form-select" style='width :200px;margin:0 auto; margin-top:30px;' name="filtretop">
-          
-          <option selected>{{filtre.filtretoppays}}</option>
-          {% for p in pays  %}
+        <input class="form-select" list="datalistOptions" placeholder="{{filtre.filtretoppays}}" style='width :210px;margin:0 auto; margin-top:30px;border: 2px solid grey;' name="filtretop">
+          <datalist id="datalistOptions" >
+          {% for p in allpays  %}
           <option>{{p}}</option>
           {%endfor%}  
-      </select>
+      </datalist>
       <input class="btn btn-outline-secondary" style="margin-left:470px; margin-top: -68px" type="submit" value="Afficher">
       </form>
       
