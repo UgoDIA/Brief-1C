@@ -884,6 +884,8 @@ def graphProduits(request):
         filtrecode=filtreselected.codeproduit
         filtreselected=filtreselected.nomproduit
         # print(filtrecode)
+        # topprod=[i[0] for i in prod]
+        # prodvente=[i[1] for i in prod]
         topprod=pf[0].to_list()
         prodvente=pf[1].to_list()
         codeprod=df[0].to_list()
