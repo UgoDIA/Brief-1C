@@ -8,9 +8,9 @@
       <h2> Import de CSV </h2>
       <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <label for="upCSV" style= " font-size: 20px" class="btn btn-primary btn-block btn-outlined">Sélectionner le(s) fichier(s) CSV</label>
+    <label for="upCSV" style= " font-size: 17px" class="btn btn-primary btn-block btn-outlined">Sélectionner le(s) fichier(s) CSV</label>
     <input type="file"  id='upCSV' name="document" multiple style="display: none">
-    <button type ="submit" id='btUp' style= " font-size: 20px" class="btn btn-success btn-block btn-outlined"> Uploader le(s) fichier(s) CSV </button>
+    <button type ="submit" id='btUp' style= " font-size: 17px" class="btn btn-success btn-block btn-outlined"> Uploader le(s) fichier(s) CSV </button>
       </form>
       {% comment %} <div>
       {% if noms %}
@@ -27,7 +27,7 @@
 
      {% if noms %}
      <p><h4> Feedback :   </h4></p>
-     <table class="table table-dark table-hover w-auto " style= " font-size: 20px;">
+     <table class="table table-dark table-hover w-auto " style= " font-size: 17px;">
       
       <thead class="thead-light">
       <tr>
@@ -122,11 +122,11 @@
  
   <form action="{% url 'save' %}" method="POST"  enctype="multipart/form-data">
     {% csrf_token %}
-    <button type ="submit" id='btUp2' style= " font-size: 20px" class="btn btn-warning btn-block btn-outlined"> Enregistrer dans la base de données</button>
-    <a href="{% url 'upload' %}" class=" btn btn-danger " style="font-size:20px; margin-left:20px" role="button" >Annuler</a>
+    <button type ="submit" id='btUp2' style= " font-size: 17px" class="btn btn-warning btn-block btn-outlined"> Enregistrer dans la base de données</button>
+    <a href="{% url 'upload' %}" class=" btn btn-danger " style="font-size:17px; margin-left:20px" role="button" >Annuler</a>
   </form>
   {% endif %} 
-  <a href= "{% url 'accueil' %}" class=" btn btn-secondary " style="font-size:20px; margin-top:20px"" role="button" >Retour à l'accueil</a>
+  <a href= "{% url 'accueil' %}" class=" btn btn-secondary " style="font-size:17px; margin-top:20px" role="button" >Retour à l'accueil</a>
 
     </div>
 

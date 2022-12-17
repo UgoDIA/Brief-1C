@@ -196,6 +196,8 @@ def save(request):
     
 @login_required(login_url='/ETL/login')    
 def menuVisu(request):
+    q=Filtre(nfiltre=1,filtrepays='top',filtredate='allD',filtreproduits='85123A',filtretoppays='United Kingdom')
+    q.save()
     return render(request,'visualisation.html')
 
 @login_required(login_url='/ETL/login')
