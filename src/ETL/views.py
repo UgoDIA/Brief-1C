@@ -72,7 +72,7 @@ def uploadCsv(request):
             # print('suppr codes : '+str(df.shape))
             produits.append(len(df))
             context['produits']=produits
-            df=df[(df['Quantity']>0 |(df['Quantity'].isnull()))]
+            df=df[(df['Quantity']>0)]
             df.drop(['Quantity'], inplace=True, axis=1)
             # print('suppr qté n :'+str(df.shape))
             quant.append(len(df))
@@ -152,7 +152,7 @@ def save(request):
                 df.loc[df['codeProduit'].str.len()>8 ]=np.nan
                 df.dropna(inplace = True)
                 # print('suppr codes : '+str(df.shape))
-                df=df[(df['Quantity']>0 |(df['Quantity'].isnull()))]
+                df=df[(df['Quantity']>0)]
                 df.drop(['Quantity'], inplace=True, axis=1)
                 # print('suppr qté n :'+str(df.shape))
                 df.drop(df[df['pays']== 'Unspecified'].index,inplace=True)
