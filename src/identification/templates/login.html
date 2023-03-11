@@ -7,10 +7,10 @@
 
 {% block content %}
 
-<div class="container" >
+<div class="container  mb-3 w-50"  >
     {% if messages %}
     {% for message in messages %}
-<div class="alert alert-danger alert-dismissible fade show">
+<div class="alert alert-danger alert-dismissible fade show "style="text-align:center">
     <strong> {{ message }}</strong>
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
@@ -24,7 +24,7 @@
 <form action="" method=POST>
     {% csrf_token %}
 
-<form >
+
 
 <div class="mb-3 w-50" style="margin:0 auto;">
 <label for="exampleInputEmail1" class="form-label">Identifiant</label>
@@ -38,10 +38,10 @@
 
 </div>
 
-    
+    <div class="mb-3 w-50" >
 
-    <input style="margin:20px; margin-left: 575px; font-size:20px"  type="submit" value="Se connecter" class="btn btn-secondary"> 
-
+    <input style="margin-left:360px; font-size:20px"  type="submit" value="Se connecter" class="btn btn-secondary"> 
+</div>
 </form>
 
 
